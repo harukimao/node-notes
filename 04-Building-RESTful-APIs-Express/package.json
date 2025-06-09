@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "mongoose": "^8.15.1"
+    "express": "^5.1.0"
   },
-  "name": "03-node-package-manager",
+  "name": "04-building-restful-apis-express",
   "version": "1.0.0",
   "main": "index.js",
   "devDependencies": {},
