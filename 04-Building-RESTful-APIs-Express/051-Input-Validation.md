@@ -1,3 +1,8 @@
+## Input Validation
+
+- npm i joi, joi for Input validation
+
+```js
 const Joi = require('joi');
 const express = require('express');
 const app = express();
@@ -48,3 +53,4 @@ app.get('/api/courses/:id', (req, res) => {
 // PORT
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
+```
