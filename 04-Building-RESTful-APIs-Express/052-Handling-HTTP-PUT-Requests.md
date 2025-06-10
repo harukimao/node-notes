@@ -1,3 +1,13 @@
+## Handling HTTP PUT Requests
+
+1) Look for course
+2) Validate, if invalid return 400 - Bad Request
+3) Update Course
+4) Return Updated Course
+
+- Object Destructuring: Could use { error } instead of result.error
+
+```js
 const Joi = require('joi');
 const express = require('express');
 const app = express();
@@ -16,14 +26,15 @@ app.get('/', (req, res) => {
 
 app.get('/api/courses', (req, res) => {
     res.send(courses);
-}); 
+});
 
 app.post('/api/courses', (req ,res) => {
 
     const result = validateCourse(req.body);
     
     if (result.error) {
-    return res.status(400).send(result.error.details[0].message);
+    res.status(400).send(result.error.details[0].message);
+    return;
     }
 
     const course = {
@@ -45,7 +56,8 @@ app.put('/api/courses/:id', (req, res) => {
     
     // Could use { error } instead of result.error
     if (result.error) {
-    return res.status(400).send(result.error.details[0].message);
+    res.status(400).send(result.error.details[0].message);
+    return;
     }
 
     // Update Course
@@ -54,21 +66,6 @@ app.put('/api/courses/:id', (req, res) => {
     // Return Updated Course
     res.send(course);
 });
-
-app.delete('/api/courses/:id', (req, res) => {
-    // Look up the course
-    // Not Existing, return 404
-    let course = courses.find(c => c.id === parseInt(req.params.id));
-    if(!course)
-        return res.status(404).send('The course with the given ID was not found');
-
-    // Delete
-    const index = courses.indexOf(course);
-    courses.splice(index, 1);
-    
-    // Return the same course
-    res.send(course);
-}); 
 
 function validateCourse(course){
     const schema = Joi.object({
@@ -88,3 +85,4 @@ app.get('/api/courses/:id', (req, res) => {
 // PORT
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
+```

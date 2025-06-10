@@ -46,8 +46,7 @@ app.post('/api/courses', (req ,res) => {
 app.get('/api/courses/:id', (req, res) => {
     let course = course.find(c => c.id === parseInt(req.params.id));
     if(!course)
-        res.status(404).send('The course with the given ID was not found');
-    req.send(course);
+        return res.status(404).send('The course with the given ID was not found');
 });
 
 // PORT

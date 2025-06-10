@@ -1,3 +1,11 @@
+## Handling HTTP Delete Requests
+
+1) Look for course
+2) Not Existing, return 404
+3) Delete
+4) Return the same course
+
+```js
 const Joi = require('joi');
 const express = require('express');
 const app = express();
@@ -88,3 +96,4 @@ app.get('/api/courses/:id', (req, res) => {
 // PORT
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
+```
