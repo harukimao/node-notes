@@ -9,4 +9,6 @@
 
 - Requests goes thru request processing pipieline which contains middleware functions which perform operations and terminate the cycle by returning a response to the client
 
-- Every request will go through the middleware function. Express application is basically a bunch of middleware functions
+- Express application is basically a bunch of middleware functions
+
+- You can create custom middleware functions
