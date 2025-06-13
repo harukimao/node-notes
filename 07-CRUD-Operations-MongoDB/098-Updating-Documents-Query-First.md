@@ -4,10 +4,10 @@
 
 #### Two Approaches 
 ###### First: 
--Approach: Query First
--findByid()
--Modify its properties
--save()
+- Approach: Query First
+- findByid()
+- Modify its properties
+- save()
 
 ###### Second:
 - Approach: Update First
