@@ -1,8 +1,6 @@
-## Regular Expressions
+## Pagination
 
-- /text/ ^ before represents that it starts with that text
-- /Hamedani$/i here $ means that it ends with this string and i means that its case *insensitive*
-- Contains Mosh.find({author: /.*Mosh.*/})
+- .skip() used to implement pagination
 
 ```js
 const mongoose = require('mongoose');
@@ -27,25 +25,23 @@ const Course = mongoose.model('Course', courseSchema);
         tags: ['node', 'backend'],
         isPublished: true
     });
+    
     const result = await course.save();
     console.log('Result', result);
 }
 
 async function getCourses(){
-    const courses = await Course
-    //.find( { author: 'Mosh', isPublished: true } )
-    // To find that it starts with Mosh
-    .find({author: /^Mosh/ })
-    // End with Hamedani
-    .find({author: /Hamedani$/i})
-    // Contains Mosh
-    .find({author: /.*Mosh.*/})
-    .limit(10)
+    const pageNumber = 2;
+    const pageSize = 10;
+    // Hardcoded for now but in real world applications it passed and query string parameters for RESTful APIs
+    // e.g
+    // /api/courses?pageNumber=2&pageSize=10
+    
+    const courses = await Course.find( { author: 'Mosh', isPublished: true } )
+    .skip((pageNumber-1)* pageSize)
+    .limit(pageSize)
     .sort({name: 1})
-    //.select({name: 1, tags: 1});
-    // If you count like this
-    .count()
-    // It returns the count of objects that meet this criteria, use it instead of select when trying to display count instead of objects
+    .select({name: 1, tags: 1});
     console.log(courses);
 }
 
