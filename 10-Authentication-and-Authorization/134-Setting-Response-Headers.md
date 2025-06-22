@@ -14,9 +14,9 @@ module.exports=function(){
 
 
 ```
+
 - default.json
 ```JSON
-
 {
     "jwtPrivateKey": "vidly_jwtPrivatekey"
 }
@@ -25,7 +25,6 @@ module.exports=function(){
 ```
 
 // get the spellings correct of this file
-
 
 - custom-environment-variables.json
 
@@ -77,7 +76,6 @@ router.post('/',async (req,res)=>{
     //res.send(_.pick(user,['_.id','name','email']));
 });
 
-
 module.exports=router;
 ```
 
@@ -91,8 +89,6 @@ const mongoose = require('mongoose');
 const express = require('express');
 const app = express();
 const users = require('./routes/users');
-
-// error simulation :)
 
 if(!config.get('jwtPrivateKey')){
     console.error('FATAL ERROR: jwtPrivateKey is not defined.');

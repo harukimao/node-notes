@@ -1,31 +1,24 @@
 ## Storing Secrets In Environment Variables
 
-
 - default.json
-```JSON
 
+```JSON
 {
     "jwtPrivateKey": "vidly_jwtPrivatekey"
 }
-
-
 ```
 
 // get the spellings correct of this file
 
-
 - custom-environment-variables.json
-
 ```JSON
 {
     "jwtPrivateKey": "JWT_PRIVATE_KEY"
 }
-
 ```
 
 - users.js
 ```js
-
 const config = require('config');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
@@ -43,18 +36,14 @@ router.post('/', async (req, res) => {
     let user = await User.findOne({ email: req.body.email });
     if (user) return res.status(400).send('User already registered.');
 
-
     //comparison of the passwords for authentication
     const validPassword = await bcrypt.compare(req.body.password, user.password);
     if(!validPassword) return res.status(400).send('User already registered.');
-
     
     // Generation of a JSON web Token
 
     const token = jwt.sign({_id: user._id}, config.get('jwtPrivateKey'));
     res.send(token);
- 
-   
 });
 
 module.exports = router;
@@ -71,8 +60,6 @@ const express = require('express');
 const app = express();
 const users = require('./routes/users');
 
-// error simulation :)
-
 if(!config.get('jwtPrivateKey')){
     console.error('FATAL ERROR: jwtPrivateKey is not defined.');
     process.exit(1);
@@ -87,4 +74,3 @@ app.use(express.json());
 app.use('/api/users', users);
 app.use('/api/auth', auth);
 ```
-

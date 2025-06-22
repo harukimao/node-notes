@@ -1,8 +1,7 @@
-## Encapsulating Logic in Mongoose Models
-
-- Apply information expert principle
+## Authorization Middleware
 
 - users.js
+
 ```js
 const config = require('config');
 const jwt = require('jsonwebtoken');
@@ -97,29 +96,91 @@ exports.User=User;
 exports.validate=validateUser;
 ```
 
-- index.js
+- genres.js
 ```js
-const config = require('config');
 
-const Joi = require('joi');
-Joi.objectId = require('joi-objectid')(Joi);
-const mongoose = require('mongoose');
-const express = require('express');
-const app = express();
-const users = require('./routes/users');
+//const asyncMiddleware=require('../middleware/async');
+const auth=require('../middleware/auth');
+const admin=require('../middleware/admin');
+const{Genre,validateGenres}=require('../models/genre');
+const mongoose=require('mongoose');
+const express=require('express');
+const router=express.Router();
 
-if(!config.get('jwtPrivateKey')){
-    console.error('FATAL ERROR: jwtPrivateKey is not defined.');
-    process.exit(1);
+router.get('/',async (req,res,next)=>{
+        const genres=await Genre.find();
+        res.send(genres);
+});
 
-}
+router.post('/',auth,async (req,res)=>{
+const {error}=validateGenres(req.body);
+if(error) return res.status(400).send(error.details[0].message);
 
-mongoose.connect('mongodb://localhost/vidly')
- .then(() => console.log('Connected to MongoDB...'))
- .catch(err => console.error('Could not connect to MongoDB...'));
+const genre= new Genre( {
+    name:req.body.name
+})
+await genre.save();
+res.send(genre);
 
-app.use(express.json()); 
-app.use('/api/users', users);
-app.use('/api/auth', auth);
+});
+
+router.put('/:id',auth,async (req,res)=>{
+
+    const {error}=validateGenres(req.body);
+    if(error) return res.status(400).send(error.details[0].message);
+
+    const genre= await Genre.findByIdAndUpdate(req.params.id,{name:req.body.name},{
+        new:true
+    })
+
+    if(!genre) return res.status(404).send('genre with the given id is not found');
+
+    res.send(genre);
+
+});
+
+router.delete('/:id',[auth,admin],async (req,res)=>{
+
+    const genre=await Genre.findByIdAndRemove(req.params.id);
+
+    if(!genre) return res.status(404).send('genre with the given id is not found');  
+
+    res.send(genre);
+
+});
+
+
+router.get('/:id',async (req,res)=>{
+
+    const genre= await Genre.findById(req.params.id);
+
+    if(!genre) return res.status(404).send('genre with the given id is not found');
+
+    res.send(genre);
+});
+
+module.exports=router;
 ```
 
+- /middleware/auth.js
+```js
+const jwt = require('jsonwebtoken');
+const config = require('config');
+
+function auth(req, res, next){
+    const token = req.header('x-auth-token');
+    if (!token) return res.status(401).send('No Loken');
+
+    try {
+        const decoded = jwt.verify(token, config.get('jwtPrivateKey')); // Storing with .env changes the second argument here
+        req.body = decoded;
+        // req.user._id to access id in route handlers
+        next();
+    }
+    catch (ex) {
+        res.status(400).send('Invalid token');
+     }
+}
+
+module.exports = auth
+```
