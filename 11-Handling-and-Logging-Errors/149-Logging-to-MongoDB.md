@@ -25,6 +25,7 @@ module.exports = function(err, req, res, next){
 ```js
 require('express-async-errors');
 const winston = require('winston');
+require('winston-mongodb');
 const error = require('./middleware/error');
 Joi.objectId=require('joi-objectid')(Joi);
 const Joi = require('joi');
@@ -39,6 +40,10 @@ const app=express();
 
 // Log in a log file
 winston.add(winston.transport.file, { filename: 'logfile.log'});
+winston.add(winston.transports.MongoDB, { db: 'mongodb://localhost/vidly', 
+ level: 'error' // Only errors will be logged
+ // if set to info then errors warnings + info, till that level basically
+});
 
 mongoose.connect('mongodb://localhost/vidly')
 .then(()=>console.log('Connectd to MongoDB..'))

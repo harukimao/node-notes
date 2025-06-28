@@ -1,6 +1,4 @@
-## Logging Errors
-
-- npm install winston
+## Logging to MongoDB
 
 - error.js
 ```js
@@ -25,6 +23,7 @@ module.exports = function(err, req, res, next){
 ```js
 require('express-async-errors');
 const winston = require('winston');
+require('winston-mongodb');
 const error = require('./middleware/error');
 Joi.objectId=require('joi-objectid')(Joi);
 const Joi = require('joi');
@@ -37,8 +36,21 @@ const home=require('./routes/home');
 const express=require('express');
 const app=express();
 
+// Strict spellings
+process.on('uncaughtException', (ex) => {
+    console.log('WE GOT AN UNCAUGHT EXCEPTION');
+    winston.error(ex.message, ex)
+});
+
 // Log in a log file
 winston.add(winston.transport.file, { filename: 'logfile.log'});
+winston.add(winston.transports.MongoDB, { db: 'mongodb://localhost/vidly', 
+ level: 'error' // Only errors will be logged
+ // if set to info then errors warnings + info, till that level basically
+});
+
+throw new Error('Erooor');
+// Won't log anything since it is outside the context of express and winston is only for requests errors or errors linked to express
 
 mongoose.connect('mongodb://localhost/vidly')
 .then(()=>console.log('Connectd to MongoDB..'))

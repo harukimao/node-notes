@@ -1,6 +1,4 @@
-## Logging Errors
-
-- npm install winston
+## Unhandled Promise Rejections
 
 - error.js
 ```js
@@ -25,6 +23,7 @@ module.exports = function(err, req, res, next){
 ```js
 require('express-async-errors');
 const winston = require('winston');
+require('winston-mongodb');
 const error = require('./middleware/error');
 Joi.objectId=require('joi-objectid')(Joi);
 const Joi = require('joi');
@@ -37,8 +36,25 @@ const home=require('./routes/home');
 const express=require('express');
 const app=express();
 
+
+winston.handleExceptions(new winston.transports.File({ filename: 'uncaughtExceptions.log'}));
+// This way winston can catch exception thrown in unhandled rejection and log it in the file
+
+// Strict spellings
+process.on('unhandledRejection', (ex) => {
+    throw ex
+});
+
+
 // Log in a log file
 winston.add(winston.transport.file, { filename: 'logfile.log'});
+winston.add(winston.transports.MongoDB, { db: 'mongodb://localhost/vidly', 
+ level: 'error'
+});
+
+const p = Promise.reject(new Error('Sth failed'));
+p.then(() => console.log('Done'));
+
 
 mongoose.connect('mongodb://localhost/vidly')
 .then(()=>console.log('Connectd to MongoDB..'))
